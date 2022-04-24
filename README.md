@@ -1,23 +1,112 @@
 ## Описание
 
-SLM Token (ERC20/BEP20) связанный с SFD(Schizo Face Dark) [1].
+SLM Token (ERC20/BEP20) связанный с SFD(SchizoFaceDark) NFT [1].
 
 **Основные особенности:**
 
-* *Staking* (5000% APR, 20_000 лет)
-* *Vesting*
+* Vesting
 
 ## Blockchain
 
 * Polygon (Ethereum Sidechain) — нулевые transaction fees на OpenSea NFT market.
 * Ethereum — Shiba Inu / CatGirl на Ethereum.
 
-## Реализация
-
-**Solidity**
+## Особенности
 
 1. Staking: https://github.com/andreitoma8/ERC20-Staking **[Not Audited]**
 2. Vesting: https://github.com/abdelhamidbakhta/token-vesting-contracts **[Security audit from Hacken]**
+
+## Техническая реализация
+
+Здесь описан процесс создания окружения разработчика в среде Windows 11. В первую очередь стоит устаносить Windows Subsystem For Linux (WSL2), т.к. основные инструменты разработки используют NodeJS, использование которого в Linux должно избавить от лишних сюрпризов.
+
+### WSL for Linux
+
+### Установка Окружения Разработчика
+
+#### NodeJS
+
+Следующие команды внутри терминала Ubuntu установят nodejs 18 версии внутри NVM — node version managerю
+
+```bash
+sudo apt-get update
+sudo apt-get upgrade
+sudo apt-get install nvm
+nvm install 18.0.0
+nvm use 18.0.0 
+```
+
+#### OpenZeppelin
+
+OpenZeppelin — это библиотка аудированных контрактов на Solidity для EVM-совместимых систем. [3]
+
+```bash
+npm install @openzeppelin/contracts
+```
+
+#### Truffle 
+
+Truffle — это набор инструментов для разработки Solidity контрактов и таких операций как развертывание, обновление и комплияция. [4]
+
+```bash
+npm install truffle -g
+```
+
+#### Ganache
+
+Ganache — это локальный ETH-совместимый blockchain для тестирования и разработки контрактов [5]
+
+Скачать Ganache для Windows можно тут: <https://trufflesuite.com/ganache/>
+
+### ERC20 на Ganache
+
+1. Запустите Ganache на Windows. В настройках Server — Hostname укажите 0.0.0.0 - All Interfaces
+2. Скомпилируйте ERC20 контракт ```truffle compile```
+3. Разверните контракт на Ganache Blockchain ```truffle deploy``` 
+
+Контракт SLMToken:
+
+```solidity
+pragma solidity ^0.8.9;
+
+import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+
+contract SLMToken is ERC20 
+{
+    constructor(string memory name, string memory symbol, uint256 initialSupply) ERC20(name, symbol) {
+        _mint(msg.sender, initialSupply);
+    }
+    
+    function decimals() public view virtual override returns (uint8) {
+        return 10;
+    }
+}
+```
+
+Настройки ERC20 контракт находятся в migrations/2_deploy_contract.js
+
+```javascript
+deployer.deploy(
+    SLMToken, // Контракт
+    "Schizo Life Matters", // Название
+    "SLM",  // Тикер
+    10_000_000 // Количество отчеканенных монет
+);
+
+```
+
+При перезапуске Ganache контракт надо развертывать снова, тк Ganache не сохраняет состояние между перезапусками.
+
+### Polygon Testnet Mumbai
+
+Для тестирования контракта в полу-боевой среде предлается использовать test-blockchain сети Polygon (Matric)
+
+1. Установите Metamask
+2. Добавьте mumbai blockchain. Нажмите add mumbai network на Mumbai Block Explorer: https://mumbai.polygonscan.com/ и выберите mumbai blockchain в качестве активной сети
+3. Запросите на баланс тестовые токены MATIC: https://faucet.polygon.technology/
+
+Контракт на Polygon Mumbai: https://mumbai.polygonscan.com/address/0xbb27B9f7c7eA4a14C1b1c985f9f829165C3b1aE2#code
+
 
 ## Примеры
 
@@ -44,3 +133,7 @@ Team allocation:
 ## Ссылки 
 
 1. https://opensea.io/collection/schizofacedark
+2. https://ubuntu.com/tutorials/install-ubuntu-on-wsl2-on-windows-11-with-gui-support
+3. https://docs.openzeppelin.com/contracts/4.x/
+4. https://trufflesuite.com/
+5. https://trufflesuite.com/ganache/
