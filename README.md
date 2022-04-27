@@ -107,6 +107,32 @@ deployer.deploy(
 
 Контракт на Polygon Mumbai: https://mumbai.polygonscan.com/address/0xbb27B9f7c7eA4a14C1b1c985f9f829165C3b1aE2#code
 
+## Контракты
+
+### SLMToken
+
+* ERC20
+* Burnable
+* Vesting
+
+### SFD NFT
+
+Контракт, совмещающий в себе
+
+* ERC721 
+* Обменник SLM/ETH
+
+Обменник SLM/ETH доступен по адресу контракта, содержит Pre-Minted SLM и ликвидность (ETH/MATIC) обеспечивающую SLM. Обмен ETH -> SLM, SLM -> ETH происходит исходя из текущего соотношения балансов SLM/ETH.
+
+### Обеспечение ликвидности токена SLM
+
+OpenSea выплачивает доходы с продажи NFT раз в 2-4 недели, обычным transfer, что делает затруднительным вызов какого-либо контракта при получении дохода.
+
+Прелагается использовать возможность OpenSea Custom Sale Contract [6]
+
+Листинг сущесвующего контракта на OpenSea: https://testnets.opensea.io/get-listed/step-two
+
+Factory реализующая чеканку монет также имеет возможности обменника: https://github.com/stillonearth/SLM-Coin/blob/main/contracts/SLMNFT.sol
 
 ## Примеры
 
@@ -137,3 +163,4 @@ Team allocation:
 3. https://docs.openzeppelin.com/contracts/4.x/
 4. https://trufflesuite.com/
 5. https://trufflesuite.com/ganache/
+6. https://docs.opensea.io/docs/2-custom-item-sale-contract
