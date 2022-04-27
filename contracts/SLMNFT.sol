@@ -74,21 +74,6 @@ contract SLMNFT is ERC721, Ownable, ERC721Burnable, ContextMixin {
     {
         return ContextMixin.msgSender();
     }
-    
-    /** 
-     * @dev See {IERC721-safeTransferFrom}.
-     */
-    function safeTransferFrom(
-        address from,
-        address to,
-        uint256 tokenId
-    ) public override {
-        safeTransferFrom(from, to, tokenId, "");
-
-        SLMSwap slmToken = SLMSwap(slmSwapAddress);
-
-        uint256 amountEth = msg.value;
-    }
 
 }
 
