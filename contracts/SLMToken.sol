@@ -4,7 +4,7 @@ import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
 contract SLMToken is ERC20 
 {
-    constructor(string memory name, string memory symbol, uint256 initialSupply) ERC20(name, symbol) {
+    constructor(uint256 initialSupply) ERC20("Schizo Life Matters", "SLM") {
         _mint(msg.sender, initialSupply);
     }
     

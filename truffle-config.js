@@ -52,11 +52,12 @@ module.exports = {
     },
 
     matic: {
-      provider: () => new HDWalletProvider(mnemonic, `https://rpc-mumbai.maticvigil.com`),
+      provider: () => new HDWalletProvider(mnemonic, `wss://rpc-mumbai.maticvigil.com/ws/v1/3ff0e73f3548510029b0876f2294cf7df6cd775a`),
       network_id: 80001,
-      confirmations: 2,
-      timeoutBlocks: 200,
-      skipDryRun: true
+      confirmations: 1,
+      skipDryRun: true,
+      networkCheckTimeout: 1000000,
+      timeoutBlocks: 20000
     },
     // Another network with more advanced options...
     // advanced: {

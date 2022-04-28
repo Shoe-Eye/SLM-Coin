@@ -4,6 +4,7 @@ pragma solidity ^0.8.4;
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Burnable.sol";
 import "@openzeppelin/contracts/metatx/ERC2771Context.sol";
+import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
 import "./SLMToken.sol";
@@ -31,21 +32,20 @@ abstract contract ContextMixin {
 }
 
 contract SLMNFT is ERC721, Ownable, ERC721Burnable, ContextMixin {
-    address private slmTokenAddress;
+    using Counters for Counters.Counter;
 
-    modifier onlyNotOwner() {
-        require(owner() == _msgSender(), "Ownable: caller is not the owner");
-        _;
+    Counters.Counter private _tokenIdCounter;
+
+    constructor() ERC721("SLMNFT", "SLM") {}
+
+    function safeMint(address to, bytes memory data) public onlyOwner {
+        uint256 tokenId = _tokenIdCounter.current();
+        _tokenIdCounter.increment();
+        _safeMint(to, tokenId, data);
     }
-
-    constructor(address slmTokenAddress_) ERC721("SLMNFT", "SLM") {
-        slmTokenAddress = slmTokenAddress_;
-    }
-
-    address private slmSwapAddress;
-
-    function safeMint(address to, uint256 tokenId) public onlyOwner {
-        _safeMint(to, tokenId);
+    
+    function _baseURI() internal view virtual override returns (string memory) {
+        return "ipfs://" + memory;
     }
 
     /**
@@ -71,36 +71,5 @@ contract SLMNFT is ERC721, Ownable, ERC721Burnable, ContextMixin {
      */
     function _msgSender() internal view override returns (address sender) {
         return ContextMixin.msgSender();
-    }
-
-    function exchangeRate() public onlyNotOwner view returns (uint256) {
-        SLMToken slmToken = SLMToken(slmTokenAddress);
-        uint256 slmBalance = slmToken.balanceOf(address(this));
-        uint256 ethBalance = address(this).balance;
-        uint256 rate = ethBalance / slmBalance;
-        return rate;
-    }
-
-    function exchangeETHForSLM() public payable onlyNotOwner {
-        uint256 amountEth = msg.value;
-        uint256 rate = exchangeRate();
-        SLMToken slmToken = SLMToken(slmTokenAddress);
-        uint256 slmAmount = amountEth / rate;
-        require(
-            slmToken.balanceOf(address(this)) >= slmAmount,
-            "Insufficient SLM amount"
-        );
-        slmToken.transfer(msg.sender, slmAmount);
-    }
-
-    function exchangeSLMForETH(uint256 slmAmount) public onlyNotOwner {
-        SLMToken slmToken = SLMToken(slmTokenAddress);
-        require(slmToken.balanceOf(address(msg.sender)) >= slmAmount);
-        uint256 ethAMount = slmAmount * exchangeRate();
-        require(address(this).balance >= ethAMount);
-        slmToken.approve(address(this), slmAmount);
-        slmToken.transferFrom(msg.sender, address(this), slmAmount);
-        payable(msg.sender).transfer(ethAMount);
-        slmToken.approve(address(this), 0);
     }
 }
