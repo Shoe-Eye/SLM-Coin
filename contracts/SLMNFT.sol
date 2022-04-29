@@ -6,6 +6,8 @@ import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Burnable.sol";
 import "@openzeppelin/contracts/metatx/ERC2771Context.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
+import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 
 import "./SLMToken.sol";
 
@@ -31,21 +33,44 @@ abstract contract ContextMixin {
     }
 }
 
-contract SLMNFT is ERC721, Ownable, ERC721Burnable, ContextMixin {
+contract SLMNFT is ERC721Enumerable, ERC721URIStorage, ERC721Burnable, ContextMixin, Ownable {
     using Counters for Counters.Counter;
 
     Counters.Counter private _tokenIdCounter;
+    string private ipfsMetadata;
 
     constructor() ERC721("SLMNFT", "SLM") {}
 
-    function safeMint(address to, bytes memory data) public onlyOwner {
-        uint256 tokenId = _tokenIdCounter.current();
-        _tokenIdCounter.increment();
-        _safeMint(to, tokenId, data);
+    function _burn(uint256 tokenId) internal override(ERC721, ERC721URIStorage) {
+        super._burn(tokenId);
     }
-    
+
+    function safeMint(address to) public onlyOwner {
+        uint256 tokenId = _tokenIdCounter.current();
+
+        _tokenIdCounter.increment();
+        _safeMint(to, tokenId);
+    }
+
+    function safeMintWithMetadata(address to, string memory ipfsCID) public onlyOwner {
+        uint256 tokenId = _tokenIdCounter.current();
+
+        _tokenIdCounter.increment();
+        _safeMint(to, tokenId);
+        _setTokenURI(tokenId, ipfsCID);
+    }
+
+    function tokenURI(uint256 tokenId)
+        public
+        view
+        override(ERC721, ERC721URIStorage)
+        returns (string memory)
+    {
+        return super.tokenURI(tokenId);
+    }
+
     function _baseURI() internal view virtual override returns (string memory) {
-        return "ipfs://" + memory;
+        return "ipfs://";
     }
 
     /**
@@ -54,7 +79,7 @@ contract SLMNFT is ERC721, Ownable, ERC721Burnable, ContextMixin {
     function isApprovedForAll(address _owner, address _operator)
         public
         view
-        override
+        override(ERC721, IERC721)
         returns (bool isOperator)
     {
         // if OpenSea's ERC721 Proxy Address is detected, auto-return true
@@ -71,5 +96,21 @@ contract SLMNFT is ERC721, Ownable, ERC721Burnable, ContextMixin {
      */
     function _msgSender() internal view override returns (address sender) {
         return ContextMixin.msgSender();
+    }
+
+    function _beforeTokenTransfer(address from, address to, uint256 tokenId)
+        internal
+        override(ERC721, ERC721Enumerable)
+    {
+        super._beforeTokenTransfer(from, to, tokenId);
+    }
+
+    function supportsInterface(bytes4 interfaceId)
+        public
+        view
+        override(ERC721, ERC721Enumerable)
+        returns (bool)
+    {
+        return super.supportsInterface(interfaceId);
     }
 }
