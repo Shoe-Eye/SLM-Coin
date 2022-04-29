@@ -1,6 +1,6 @@
 ## Описание
 
-SLM Token (ERC20/BEP20) связанный с SFD(SchizoFaceDark) NFT [1].
+SLM Token (ERC20/BEP20) + NFT (ERC721) [1].
 
 **Основные особенности:**
 
