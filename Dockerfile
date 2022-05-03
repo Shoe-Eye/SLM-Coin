@@ -15,5 +15,8 @@ RUN npm install
 # Bundle app source
 COPY . .
 
+ADD build build
+ADD scripts scripts
+
 EXPOSE 3000
-# CMD [ "node", "scripts/server.js" ]
+CMD [ "node", "scripts/server.js" ]
