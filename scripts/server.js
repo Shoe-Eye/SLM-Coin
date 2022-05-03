@@ -45,7 +45,7 @@ async function main() {
     try {
       const metadata_uri = await slmNFT.methods.tokenURI(req.params["token_id"]).call()
       console.log(metadata_uri)
-      const metadata = await getJSONfromIPFS(metadata_uri.replace("/ipfs/", ""))
+      const metadata = await getJSONfromIPFS(metadata_uri.replace("ipfs:///", ""))
       res.send(metadata)
     } catch (e) {
       res.send({ error: e })
