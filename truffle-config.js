@@ -25,7 +25,7 @@
 
 const HDWalletProvider = require('@truffle/hdwallet-provider');
 const fs = require('fs');
-const mnemonic = fs.readFileSync(".secret").toString().trim();
+const mnemonic = fs.readFileSync("./secrets/metamask-phrase").toString().trim();
 
 module.exports = {
   /**
@@ -51,7 +51,7 @@ module.exports = {
       network_id: "*",       // Any network (default: none)
     },
 
-    matic: {
+    mumbai: {
       provider: () => new HDWalletProvider(mnemonic, `wss://rpc-mumbai.maticvigil.com/ws/v1/3ff0e73f3548510029b0876f2294cf7df6cd775a`),
       network_id: 80001,
       confirmations: 1,

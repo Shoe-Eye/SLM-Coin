@@ -38,8 +38,11 @@ contract SLMNFT is ERC721Enumerable, ERC721URIStorage, ERC721Burnable, ContextMi
 
     Counters.Counter private _tokenIdCounter;
     string private ipfsMetadata;
+    address private apiAddress;
 
-    constructor() ERC721("SLMNFT", "SLM") {}
+    constructor(address apiAddress_) ERC721("SLMNFT", "SLM") {
+        apiAddress = apiAddress_;
+    }
 
     function _burn(uint256 tokenId) internal override(ERC721, ERC721URIStorage) {
         super._burn(tokenId);
@@ -71,6 +74,11 @@ contract SLMNFT is ERC721Enumerable, ERC721URIStorage, ERC721Burnable, ContextMi
 
     function _baseURI() internal view virtual override returns (string memory) {
         return "ipfs://";
+    }
+
+    function setTokenURI(uint256 tokenId, string memory ipfsCID) public {
+        require(msg.sender==apiAddress);
+        _setTokenURI(tokenId, ipfsCID);
     }
 
     /**
