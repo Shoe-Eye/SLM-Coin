@@ -64,37 +64,6 @@ Ganache — это локальный ETH-совместимый blockchain дл
 2. Скомпилируйте ERC20 контракт ```truffle compile```
 3. Разверните контракт на Ganache Blockchain ```truffle deploy``` 
 
-Контракт SLMToken:
-
-```solidity
-pragma solidity ^0.8.9;
-
-import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
-
-contract SLMToken is ERC20 
-{
-    constructor(string memory name, string memory symbol, uint256 initialSupply) ERC20(name, symbol) {
-        _mint(msg.sender, initialSupply);
-    }
-    
-    function decimals() public view virtual override returns (uint8) {
-        return 10;
-    }
-}
-```
-
-Настройки ERC20 контракт находятся в migrations/2_deploy_contract.js
-
-```javascript
-deployer.deploy(
-    SLMToken, // Контракт
-    "Schizo Life Matters", // Название
-    "SLM",  // Тикер
-    10_000_000 // Количество отчеканенных монет
-);
-
-```
-
 При перезапуске Ganache контракт надо развертывать снова, тк Ganache не сохраняет состояние между перезапусками.
 
 ### Polygon Testnet Mumbai
@@ -109,6 +78,8 @@ deployer.deploy(
 
 ## Контракты
 
+См. `deployment.json`
+
 ### SLMToken
 
 * ERC20
@@ -117,10 +88,12 @@ deployer.deploy(
 
 ### SFD NFT
 
-Контракт, совмещающий в себе
+### NFT Factory
 
-* ERC721 
-* Обменник SLM/ETH
+Контракт-фабрика, для выпуска NFT на OpenSea, создающий новые NFT в момент продажи токена на площадке.
+
+Когда токен создан, его метаданные обновляются API, который назначает токену случайное изображение (и метаданные).
+Площадка переводит на счёт контракта средства, которые увеличиваю встроенный в контракт пул ликвидности SLM/ETH(MATIC), позволяющий производить обмен токенов в автоматическом режиме.
 
 Обменник SLM/ETH доступен по адресу контракта, содержит Pre-Minted SLM и ликвидность (ETH/MATIC) обеспечивающую SLM. Обмен ETH -> SLM, SLM -> ETH происходит исходя из текущего соотношения балансов SLM/ETH.
 
@@ -134,27 +107,29 @@ OpenSea выплачивает доходы с продажи NFT раз в 2-4 
 
 Factory реализующая чеканку монет также имеет возможности обменника: https://github.com/stillonearth/SLM-Coin/blob/main/contracts/SLMNFT.sol
 
-## Примеры
+## Токеномика
 
-### Catgirl
+**Initial supply**: 1,000,000,000,000,000
+**Initial burn**: 50%
+**Team allocation**: 1%
 
-Tiker: CATGIRL\
-Contract: https://bscscan.com/address/0x79ebc9a2ce02277a4b5b3a768b1c0a4ed75bd936#code
-Chain: Ethereum
+### Automated Market Maker Fees
 
-#### Экономика
+**Burn**: 2% Burn Each Transfer / Buy / Sell
+**Marketing**: 2%
 
-```
-Initial supply: 100,000,000,000,000,000
-Initial burn: 50,000,000,000,000,000
-Fee per transaction:
-1% reflection
-1% auto liquidity
-2% is contributed toward the NFT farming pool
-1% toward our marketing/development budget
-Team allocation:
-1%: Locked for 4 years on DxSale
-```
+## Transfer Fees
+
+**Liquidity Pool**: 2%
+**Marketing**: 2%
+
+## Staking 
+
+**Pro-Rata**
+
+**3 month**  1% of supply distributed across holders
+**6 month**  2% of supply distributed across holders
+**12 month**  10% of supply distributed across holders
     
 ## Ссылки 
 
