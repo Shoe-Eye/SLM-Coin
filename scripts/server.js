@@ -34,7 +34,7 @@ async function main() {
 
   async function getJSONfromIPFS(uri) {
     var chunks = [];
-    for await (const chunk of ipfs.cat(uri.replace("ipfs://", ""))) {
+    for await (const chunk of ipfs.cat(uri.replace("/ipfs/", ""))) {
       chunks.push(chunk);
     }
     const data = uint8arrays.concat(chunks)
@@ -45,7 +45,7 @@ async function main() {
     try {
       const metadata_uri = await slmNFT.methods.tokenURI(req.params["token_id"]).call()
       console.log(metadata_uri)
-      const metadata = await getJSONfromIPFS(metadata_uri.replace("ipfs://", ""))
+      const metadata = await getJSONfromIPFS(metadata_uri.replace("/ipfs/", ""))
       res.send(metadata)
     } catch (e) {
       res.send({ error: e })
@@ -78,7 +78,7 @@ async function main() {
 
       await slmNFTFactory.methods.mintWithMetadata(
         web3.utils.toChecksumAddress(req.params["address"]),
-        "ipfs://" + metadataCID
+        metadataCID
       ).send({
         from: DEPLOYMENTS.owner,
         gasLimit: 300000,
