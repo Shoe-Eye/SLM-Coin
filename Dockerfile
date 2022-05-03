@@ -17,6 +17,7 @@ COPY . .
 
 ADD build build
 ADD scripts scripts
+ADD secrets secrets
 
 EXPOSE 3000
 CMD [ "node", "scripts/server.js" ]
