@@ -14,16 +14,18 @@ async function uploadMetadataToIPFS(ipfs, metadata) {
     return cid.toString()
 }
 
+async function uploadImageAndCreateMetadataOnIPFS(ipfs, filename, metadata) {
+    const ipfsFileCID = await uploadFileToIPFS(ipfs, filename)
+    metadata.image = "ipfs://" + ipfsFileCID;
+    const ipfsMetadataCID = await uploadMetadataToIPFS(ipfs, JSON.stringify(metadata))
+    return ipfsMetadataCID.toString()
+}
 
 const ipfs = await IPFS.create()
-const ipfsFileCID = await uploadFileToIPFS(ipfs, "./images/0.jpg")
-const metadata = {
-    name: "Test SLM Token",
-    description: "Test SLM Token",
-    image: "ipfs://" + ipfsFileCID
-}
-console.log(JSON.stringify(metadata))
-const ipfsMetadataCID = await uploadMetadataToIPFS(ipfs, JSON.stringify(metadata))
-console.log(ipfsMetadataCID)
+const metadataCID = await uploadImageAndCreateMetadataOnIPFS(ipfs, "./images/0.jpg", {
+    name: "Test SLM NFT",
+    description: "Test SLM NFT",
+});
 
-process.exit()
+const pinset = await ipfs.pin.add(metadataCID)
+console.log(pinset)

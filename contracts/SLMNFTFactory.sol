@@ -122,7 +122,7 @@ contract SLMNFTFactory is Factory, Ownable {
         return slmSupply < (SCHIZO_SUPPLY - numItemsAllocated);
     }
 
-    function mint(uint256 _optionId, address to) public {
+    function mint(uint256 _optionId, address to) public onlyOwner {
         SLMNFT slmNft = SLMNFT(nftAddress);
         slmNft.safeMint(to);
     }
@@ -131,7 +131,7 @@ contract SLMNFTFactory is Factory, Ownable {
         return "ipfs://QmbhuRNLrb2NDbWc13JyjdJrcNGzmAiWXw2BBf7LmLZZst";
     }
 
-    function mintWithMetadata(address to, string memory data) public {
+    function mintWithMetadata(address to, string memory data) public onlyOwner {
         SLMNFT slmNft = SLMNFT(nftAddress);
         slmNft.safeMintWithMetadata(to, data);
     }
@@ -144,7 +144,7 @@ contract SLMNFTFactory is Factory, Ownable {
         address,
         address _to,
         uint256 _tokenId
-    ) public {
+    ) public  {
         mint(_tokenId, _to);
     }
 
