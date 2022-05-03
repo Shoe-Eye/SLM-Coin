@@ -109,27 +109,27 @@ Factory реализующая чеканку монет также имеет �
 
 ## Токеномика
 
-**Initial supply**: 1,000,000,000,000,000
-**Initial burn**: 50%
-**Team allocation**: 1%
+* **Initial supply**: 1,000,000,000,000,000
+* **Initial burn**: 50%
+* **Team allocation**: 1%
 
 ### Automated Market Maker Fees
 
-**Burn**: 2% Burn Each Transfer / Buy / Sell
-**Marketing**: 2%
+* **Burn**: 2% Burn Each Transfer / Buy / Sell
+* **Marketing**: 2%
 
 ## Transfer Fees
 
-**Liquidity Pool**: 2%
-**Marketing**: 2%
+* **Liquidity Pool**: 2%
+* **Marketing**: 2%
 
 ## Staking 
 
 **Pro-Rata**
 
-**3 month**  1% of supply distributed across holders
-**6 month**  2% of supply distributed across holders
-**12 month**  10% of supply distributed across holders
+* **3 month**  1% of supply distributed across holders
+* **6 month**  2% of supply distributed across holders
+* **12 month**  10% of supply distributed across holders
     
 ## Ссылки 
 
