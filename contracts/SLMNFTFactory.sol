@@ -133,7 +133,7 @@ contract SLMNFTFactory is Factory, Ownable {
     }
 
     function tokenURI(uint256 tokenId) public view returns (string memory) {
-        return "ipfs://QmbhuRNLrb2NDbWc13JyjdJrcNGzmAiWXw2BBf7LmLZZst";
+        return "/ipfs/QmbhuRNLrb2NDbWc13JyjdJrcNGzmAiWXw2BBf7LmLZZst";
     }
 
     function mintWithMetadata(address to, string memory data) public onlyOwner {

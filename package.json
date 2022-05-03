@@ -7,6 +7,7 @@
     "express": "^4.18.1",
     "ipfs-core": "^0.14.3",
     "opensea-js": "^3.0.4",
+    "rarepress": "^0.1.7",
     "uint8arrays": "^3.0.0",
     "web3": "^1.7.3",
     "web3-provider-engine": "^16.0.4",

@@ -59,7 +59,7 @@ async function main() {
         description: Math.floor(Date.now() / 1000),
       })
 
-      await slmNFT.methods.setTokenURI(req.params["token_id"], "ipfs://" + cid).send({
+      await slmNFT.methods.setTokenURI(req.params["token_id"], cid).send({
         from: DEPLOYMENTS.owner,
         gasLimit: 300000,
       })
