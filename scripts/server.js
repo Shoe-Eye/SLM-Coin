@@ -1,8 +1,11 @@
+const bodyParser = require('body-parser')
 const express = require('express')
-const IPFS = require('ipfs-core')
-const Web3 = require('web3')
 const fs = require('fs')
+const IPFS = require('ipfs-core')
+const methodOverride = require('method-override')
 const uint8arrays = require('uint8arrays')
+const Web3 = require('web3')
+
 
 const NETWORK = "mumbai"
 const NFT_METADATA = JSON.parse(fs.readFileSync("./build/contracts/SLMNFT.json").toString())
@@ -34,62 +37,70 @@ async function main() {
 
   async function getJSONfromIPFS(uri) {
     var chunks = [];
-    for await (const chunk of ipfs.cat(uri.replace("/ipfs/", ""))) {
-      chunks.push(chunk);
+    try {
+      for await (const chunk of ipfs.cat(uri.replace("ipfs://", ""))) {
+        chunks.push(chunk);
+      }
+    } catch(e) {
+      throw(`Unable to retreive cid ${uri} from IPFS"`)
     }
     const data = uint8arrays.concat(chunks)
     return JSON.parse(new TextDecoder().decode(data).toString());
   }
 
-  app.get('/slm/:token_id', async (req, res) => {
-    try {
+  function wrapError(func) {
+    return async (req, res) => {
+      try {
+        await func(req, res)
+      } catch(err) {
+        console.log(err)
+        res.send("error")
+      }
+    }
+  }
+
+  app.use(bodyParser.urlencoded({extended: true}))
+  app.use(bodyParser.json())
+  app.use(methodOverride())
+
+  function generateNFT(optionId) {
+    return {
+      name: "Test SLM NFT",
+      description: Math.floor(Date.now() / 1000),
+    }
+  }
+
+  app.get('/slm/:token_id', wrapError(async (req, res) => {
       const metadata_uri = await slmNFT.methods.tokenURI(req.params["token_id"]).call()
-      console.log(metadata_uri)
-      const metadata = await getJSONfromIPFS(metadata_uri.replace("ipfs://", ""))
-      res.send(metadata)
-    } catch (e) {
-      console.log(e)
-      res.send({ error: e })
-    }
-  })
+      if (metadata_uri.startsWith('ipfs://')){
+        const metadata = await getJSONfromIPFS(metadata_uri)
+        res.send(metadata) 
+      } else {
+        const cid = await ipfsMetadata.uploadImageAndCreateMetadataOnIPFS(ipfs, "./images/0.jpg", generateNFT(0))
+    
+        await slmNFT.methods.setTokenURI(req.params["token_id"], cid).send({
+          from: DEPLOYMENTS.owner,
+          gasLimit: 300000,
+        })
 
-  app.get('/slm/update_metadata/:token_id', async (req, res) => {
-    try {
-      const cid = await ipfsMetadata.uploadImageAndCreateMetadataOnIPFS(ipfs, "./images/0.jpg", {
-        name: "Test SLM NFT",
-        description: Math.floor(Date.now() / 1000),
-      })
+        const metadata = await getJSONfromIPFS(cid)
+        res.send(metadata)
+      }
+  }))
 
-      await slmNFT.methods.setTokenURI(req.params["token_id"], cid).send({
-        from: DEPLOYMENTS.owner,
-        gasLimit: 300000,
-      })
-      res.sendStatus(200)
-    } catch (e) {
-      console.log(e)
-      res.send({ error: e })
-    }
-  })
+  app.get('/slm/mint/:address', wrapError(async (req, res) => {
+    const metadataCID = await ipfsMetadata.uploadMetadataToIPFS(ipfs, JSON.stringify(generateNFT(0)));
 
-  app.get('/slm/mint/:address', async (req, res) => {
-    try {
-      const metadataCID = await ipfsMetadata.uploadImageAndCreateMetadataOnIPFS(ipfs, "./images/0.jpg", {
-        name: "Test SLM NFT",
-        description: Math.floor(Date.now() / 1000)
-      });
-
-      await slmNFTFactory.methods.mintWithMetadata(
-        web3.utils.toChecksumAddress(req.params["address"]),
-        metadataCID
-      ).send({
-        from: DEPLOYMENTS.owner,
-        gasLimit: 300000,
-      })
-      res.sendStatus(200)
-    } catch (e) {
-      res.send({ error: e })
-    }
-  })
+    await slmNFTFactory.methods.mintWithMetadata(
+      web3.utils.toChecksumAddress(req.params["address"]),
+      metadataCID
+    ).send({
+      from: DEPLOYMENTS.owner,
+      gasLimit: 300000,
+    })
+    
+    res.sendStatus(200)
+  }))
 
   app.listen(port, () => {
     console.log(`App listening on port ${port}`)
