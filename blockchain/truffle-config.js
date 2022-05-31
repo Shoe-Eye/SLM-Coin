@@ -25,7 +25,7 @@
 
 const HDWalletProvider = require('@truffle/hdwallet-provider');
 const fs = require('fs');
-const MNEMONIC = fs.readFileSync("./../secrets/metamask-phrase").toString().trim();
+const MNEMONIC = fs.readFileSync("./../api-server/secrets/metamask-phrase").toString().trim();
 
 module.exports = {
   /**
