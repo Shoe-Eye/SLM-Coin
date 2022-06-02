@@ -25,7 +25,7 @@
 
 const HDWalletProvider = require('@truffle/hdwallet-provider');
 const fs = require('fs');
-const MNEMONIC = fs.readFileSync("./../api-server/secrets/metamask-phrase").toString().trim();
+const MNEMONIC = fs.readFileSync("./secrets/metamask-phrase").toString().trim();
 
 module.exports = {
   /**
@@ -59,6 +59,25 @@ module.exports = {
       networkCheckTimeout: 1000000,
       timeoutBlocks: 20000
     },
+
+    ethereum: {
+      provider: () => new HDWalletProvider(MNEMONIC, `wss://mainnet.infura.io/ws/v3/1f3f5f1f10274e84be520b28214158fe`),
+      network_id: 1,
+      confirmations: 1,
+      skipDryRun: true,
+      networkCheckTimeout: 1000000,
+      timeoutBlocks: 20000
+    },
+
+    rinkeby: {
+      provider: () => new HDWalletProvider(MNEMONIC, `wss://rinkeby.infura.io/ws/v3/1f3f5f1f10274e84be520b28214158fe`),
+      network_id: 4,
+      confirmations: 1,
+      skipDryRun: true,
+      networkCheckTimeout: 1000000,
+      timeoutBlocks: 20000
+    },
+
     // Another network with more advanced options...
     // advanced: {
     // port: 8777,             // Custom port
