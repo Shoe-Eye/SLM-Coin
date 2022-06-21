@@ -11,6 +11,7 @@ import {
   Visibility,
 } from 'semantic-ui-react'
 
+import MainPage from './MainPage'
 import { NftGallery } from 'react-nft-gallery';
 import useMetaMask from './hooks/metamask';
 import SLMNFTFactory from './contracts/SLMNFTFactory';
@@ -273,62 +274,6 @@ const ResponsiveContainer = ({ children }) => (
 ResponsiveContainer.propTypes = {
   children: PropTypes.node,
   section: PropTypes.string,
-}
-
-const MainPage = () => {
-
-  const web3 = window.web3
-  const [state, setState_] = useState({
-    exchangeRate: 0,
-    ethBalance: 0,
-    fundSlmBalance: 0,
-    fundWalletSlmBalance: 0,
-    maticUsdRate: 0,
-    decimals: 1,
-  });
-
-  const nftFactory = new web3.eth.Contract(SLMNFTFactory.abi, SLMNFTFactory.networks["80001"].address)
-  const nftToken = new web3.eth.Contract(SLMToken.abi, SLMToken.networks["80001"].address)
-  const priceFeed = new web3.eth.Contract(aggregatorV3InterfaceABI, MATIC_USD_FEED)
-
-  useEffect(async () => {
-    let rate = await priceFeed.methods.latestRoundData().call();
-    let decimals = await priceFeed.methods.decimals().call();
-    const state = {
-      exchangeRate: await nftFactory.methods.exchangeRate().call(),
-      fundEthBalance: web3.utils.fromWei(await web3.eth.getBalance(SLMNFTFactory.networks["80001"].address), 'ether'),
-      fundSlmBalance: await nftToken.methods.balanceOf(SLMNFTFactory.networks["80001"].address).call(),
-      walletSlmBalance: await nftToken.methods.balanceOf(web3.currentProvider.selectedAddress).call(),
-      maticUsdRate: rate.answer / 10 ** decimals,
-    }
-    console.log(state)
-    setState_(state)
-  }, []);
-
-  return (
-    <Segment style={{ padding: '0em' }} vertical>
-      <Grid celled='internally' columns='equal' stackable>
-        <Grid.Row textAlign='center'>
-          <Grid.Column style={{ paddingBottom: '5em', paddingTop: '5em' }}>
-            <Header as='h1'>
-              <Image style={{ margin: 'auto' }} src="/images/logo.webp" />
-              Schizophrenic Fund
-              <Image style={{ margin: 'auto' }} src="/images/logo.webp" />
-            </Header>
-            <p style={{ fontSize: '1.33em' }}>
-              <b>MATIC:</b>  {state.fundEthBalance}
-              <br />
-              <b>SLM:</b> {state.fundSlmBalance}
-              <br />
-              <b>SLM/MATIC:</b> {state.exchangeRate}
-              <br />
-              <b>Market Cap:</b> {state.maticUsdRate} USD
-            </p>
-          </Grid.Column>
-        </Grid.Row>
-      </Grid>
-    </Segment>
-  );
 }
 
 const NFT = () => {
