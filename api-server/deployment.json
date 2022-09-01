@@ -1,8 +1,10 @@
 {
-    "mumbai": {
-        "nft": "",
-        "token": "0x34E9F9363b9f9deA27F5C58999376bbe9812c761 ",
-        "factory": "",
+    "ethereum": {
+        "token": "0x34E9F9363b9f9deA27F5C58999376bbe9812c761",
+        "owner": "0xc23Ca8e4261d8833F7788B6eD5449377115Ac2DC"
+    },
+    "matic": {
+        "nft": "0x0eaafe5969b215137146dA0391005ccc70c7bAAD",
         "owner": "0xc23Ca8e4261d8833F7788B6eD5449377115Ac2DC"
     }
 }
