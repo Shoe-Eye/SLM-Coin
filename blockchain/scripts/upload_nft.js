@@ -8,18 +8,19 @@ const Web3 = require('web3')
 const NETWORK = "matic"
 const NFT_METADATA = JSON.parse(fs.readFileSync("./build/contracts/SLMNFT.json").toString())
 const DEPLOYMENTS = JSON.parse(fs.readFileSync("./deployment.json").toString())[NETWORK]
-const RPC_PROVIDER = fs.readFileSync("./../blockchain/secrets/matic-provider").toString()
-const PRIVATE_KEY = fs.readFileSync("./../blockchain/secrets/metamask-pk").toString()
+const RPC_PROVIDER = fs.readFileSync("./secrets/matic-provider").toString()
+const PRIVATE_KEY = fs.readFileSync("./secrets/metamask-pk").toString()
+const NFT_OWNER = fs.readFileSync("./secrets/nftowner").toString()
 
 async function main() {
     const ipfs = await IPFS.create()
     const web3 = new Web3(RPC_PROVIDER)
     await web3.eth.accounts.wallet.add({
-        address: "0xc23Ca8e4261d8833F7788B6eD5449377115Ac2DC",
+        address: NFT_METADATA["owner"],
         privateKey: PRIVATE_KEY,
       });
 
-    const ipfsMetadata = await import('./metadata.mjs')
+    const ipfsUtils = await import('./ipfsUtils.mjs')
 
     const slmNFT = new web3.eth.Contract(
         NFT_METADATA.abi, 
@@ -31,14 +32,14 @@ async function main() {
         name: 'Good Deed # 1'
     };
 
-    const cid = await ipfsMetadata.uploadImageAndCreateMetadataOnIPFS(
+    const cid = await ipfsUtils.uploadImageAndCreateMetadataOnIPFS(
         ipfs,
-        "D:\SLM-3D-GIFs-NFT\\абдулов в матрице\\DALL·E 2022-07-31 10.33.09.gif", 
+        "D:\SLM-3D-GIFs-NFT\\абдулов в матрице\\DALL·E 2022-07-31 10.33.28", 
         metadata)
 
     console.log('Calling Smart Contract...')
 
-    await slmNFT.methods.safeMintWithMetadata('0xf14bE4ba33745D648DBC79b88dE4C330ddA7Ad03', cid).send({
+    await slmNFT.methods.safeMintWithMetadata(NFT_OWNER, cid).send({
         from: DEPLOYMENTS.owner,
         gasPrice: 60000000000,
         gas: 15000000, 

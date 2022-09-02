@@ -16,9 +16,7 @@ export async function uploadMetadataToIPFS(ipfs, metadata) {
 
 export async function uploadImageAndCreateMetadataOnIPFS(ipfs, filename, metadata) {
     const ipfsFileCID = await uploadFileToIPFS(ipfs, filename)
-    metadata.image = "ipfs://" + ipfsFileCID;
-    metadata.secription = 'Vnuk preached the truth about hell in digital matrix structures.'
-    metadata.name = 'Good Deed # 1'
+    metadata.image = "ipfs://" + ipfsFileCID;    
     const ipfsMetadataCID = await uploadMetadataToIPFS(ipfs, JSON.stringify(metadata))
     return ipfsMetadataCID.toString()
 }
